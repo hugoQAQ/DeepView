@@ -13,18 +13,17 @@ class Evaluation():
     def __init__(self, datatype, runtype=''):
         if datatype == 'VOC':
             self.true_list = None
-            if runtype == 'RQ3':
-                with open('./data/VOCsel_augGT.json') as f:
-                    self.true_list = json.load(f)
-            else:
-                with open('./data/VOCvalGT.json') as f:
-                    self.true_list = json.load(f)
-            self.id2gtbbx = {x['image_id']: x['bbox'] for x in self.true_list}
-            self.id2gtlabel = {x['image_id']: x['category_id'] for x in self.true_list}
+            with open('/home/hugo/datasets/voc/gt_val.json') as f:
+                self.true_list = json.load(f)
+            self.id2gtbbx = {x['image_id']: [] for x in self.true_list}
+            self.id2gtlabel = {x['image_id']: [] for x in self.true_list}
             self.id2prebbx = {x['image_id']: [] for x in self.true_list}
             self.id2prelabel = {x['image_id']: [] for x in self.true_list}
             self.id2dfbbx = {x['image_id']: [] for x in self.true_list}
             self.imgid_list = sorted([x['image_id'] for x in self.true_list])
+            for x in self.true_list:
+                self.id2gtbbx[x['image_id']] = self.id2gtbbx[x['image_id']] + [self.transxyxy(x['bbox'])]
+                self.id2gtlabel[x['image_id']] = self.id2gtlabel[x['image_id']] + [x['category_id']]
 
         if datatype == 'COCO':
             with open('./data/instances_val2017.json') as f:

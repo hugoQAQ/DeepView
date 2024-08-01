@@ -16,7 +16,7 @@ import json
 from visualization import visualization
 
 device = "cuda"
-coco_root = './data/coco2017'
+coco_root = '/home/hugo/fiftyone/coco-2017'
 batchsize = 1
 
 
@@ -80,6 +80,7 @@ def DeepView(datapath):
     result = {}
     metrics = Metrics(pre_list=pre_list, dif_list=None, imgpre_list=None)
     result['DeepView'] = metrics.deepview('COCO')
+    result['1vs2'] = metrics.one_minus_pmax()
     metric_names = [_[0] for _ in result.items()]
     vis = visualization()
     colorlist = ['xkcd:red', 'xkcd:peach', 'xkcd:green', 'xkcd:light purple', 'xkcd:black', 'xkcd:grey']
@@ -119,7 +120,7 @@ def DeepView(datapath):
 
 
 if __name__ == "__main__":
-    Inference()  # Model Inference
+    # Inference()  # Model Inference
 
     deepview_result = DeepView(datapath='./data/FRCNN_COCO070.json')
 

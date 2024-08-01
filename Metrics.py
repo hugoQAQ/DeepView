@@ -33,6 +33,16 @@ class Metrics():
         #         result.append(1 - max(full_score))
         return result
 
+    def entropy_instance(self, T):
+        def entropy_instance(x):
+            if x < T:
+                return 0
+            p_instn = x
+            return - p_instn * (math.log(p_instn))  # - (1 - p_instn) * (math.log(1 - p_instn))
+
+        instance_etps = [sum([entropy_instance(p) for p in x['full_score']]) for x in self.pre_list]
+        return instance_etps
+    
     def entropy_image(self, T):
         def entropy_(x):
             if x[0] < T:
@@ -117,7 +127,6 @@ class Metrics():
             if x[0] < T:
                 return 0
             return (1 - (x[0] - x[1])) ** 2
-
         img_one_two = [sum([one_two_(p) for p in img['two_score']]) for img in self.imgpre_list]
         img_id = [img['image_id'] for img in self.imgpre_list]
         zipped = zip(img_one_two, img_id)
@@ -127,6 +136,16 @@ class Metrics():
         result = []
         for i, x in enumerate(self.pre_list):
             result.append(srtd_img_id.index(x['image_id']))
+        return result
+    
+    def one_vs_two_instance(self, T):
+        def one_two_(x):
+            if x[0] < T:
+                return 0
+            return (1 - (x[0] - x[1])) ** 2
+        def top2_score(x):
+            return sorted(x, reverse=True)[:2]
+        result = [one_two_(top2_score(x['full_score'])) for x in self.pre_list]
         return result
 
     def gini(self, T):
@@ -145,3 +164,12 @@ class Metrics():
         for i, x in enumerate(self.pre_list):
             result.append(srtd_img_id.index(x['image_id']))
         return result
+    
+    def gini_instance(self, T):
+        def gini_(x):
+            if x < T:
+                return 0
+            return x ** 2
+
+        img_one_two = [1 - sum([gini_(p) for p in x['full_score']]) for x in self.pre_list]
+        return img_one_two
